@@ -1,16 +1,20 @@
+# xsv (fork)
+
 xsv is a command line program for indexing, slicing, analyzing, splitting
-and joining CSV files. Commands should be simple, fast and composable:
+and joining CSV files. [This is a fork of the original project created by BurntSushi](https://github.com/BurntSushi/xsv).
+
+Commands should be simple, fast and composable:
 
 1. Simple tasks should be easy.
 2. Performance trade offs should be exposed in the CLI interface.
 3. Composition should not come at the expense of performance.
 
 This README contains information on how to
-[install `xsv`](https://github.com/BurntSushi/xsv#installation), in addition to
+[install `xsv`](https://github.com/seripap/xsv#installation), in addition to
 a quick tour of several commands.
 
-[![Linux build status](https://api.travis-ci.org/BurntSushi/xsv.svg)](https://travis-ci.org/BurntSushi/xsv)
-[![Windows build status](https://ci.appveyor.com/api/projects/status/github/BurntSushi/xsv?svg=true)](https://ci.appveyor.com/project/BurntSushi/xsv)
+[![Linux build status](https://api.travis-ci.org/seripap/xsv.svg)](https://travis-ci.org/seripap/xsv)
+[![Windows build status](https://ci.appveyor.com/api/projects/status/github/seripap/xsv?svg=true)](https://ci.appveyor.com/project/seripap/xsv)
 [![](https://meritbadge.herokuapp.com/xsv)](https://crates.io/crates/xsv)
 
 Dual-licensed under MIT or the [UNLICENSE](https://unlicense.org).
@@ -20,6 +24,7 @@ Dual-licensed under MIT or the [UNLICENSE](https://unlicense.org).
 
 * **cat** - Concatenate CSV files by row or by column.
 * **count** - Count the rows in a CSV file. (Instantaneous with an index.)
+* **dedup** - Remove redundant rows.
 * **fixlengths** - Force a CSV file to have same-length records by either
   padding or truncating them.
 * **flatten** - A flattened view of CSV records. Useful for viewing one record
@@ -88,7 +93,7 @@ Longitude   Float    -179.983333    180            1           14          37.08
 ```
 
 The `xsv table` command takes any CSV data and formats it into aligned columns
-using [elastic tabstops](https://github.com/BurntSushi/tabwriter). You'll
+using [elastic tabstops](https://github.com/burntsushi/tabwriter). You'll
 notice that it even gets alignment right with respect to Unicode characters.
 
 So, this command takes about 12 seconds to run on my machine, but we can speed
@@ -296,90 +301,28 @@ comes from constructing a very simple hash index of one of the CSV data files
 given. The `join` command does an inner join by default, but it also has left,
 right and full outer join support too.
 
+### Dedup
+
+```
+xsv dedup -s Country worldcitiespop.csv
+```
+
+Will remove all duplicate entries found on the input header.
 
 ### Installation
 
-Binaries for Windows, Linux and macOS are available [from Github](https://github.com/BurntSushi/xsv/releases/latest).
-
-If you're a **macOS Homebrew** user, then you can install xsv
-from homebrew-core:
-
-```
-$ brew install xsv
-```
-
-If you're a **macOS MacPorts** user, then you can install xsv
-from the [official ports](https://www.macports.org/ports.php?by=name&substr=xsv):
-
-```
-$ sudo port install xsv
-```
-
-If you're a **Nix/NixOS** user, you can install xsv from nixpkgs:
-
-```
-$ nix-env -i xsv
-```
-
-Alternatively, you can compile from source by
+Compile from source by
 [installing Cargo](https://crates.io/install)
 ([Rust's](https://www.rust-lang.org/) package manager)
 and installing `xsv` using Cargo:
 
-```bash
-cargo install xsv
-```
-
 Compiling from this repository also works similarly:
 
 ```bash
-git clone git://github.com/BurntSushi/xsv
+git clone git://github.com/seripap/xsv
 cd xsv
 cargo build --release
 ```
 
 Compilation will probably take a few minutes depending on your machine. The
 binary will end up in `./target/release/xsv`.
-
-
-### Benchmarks
-
-I've compiled some [very rough
-benchmarks](https://github.com/BurntSushi/xsv/blob/master/BENCHMARKS.md) of
-various `xsv` commands.
-
-
-### Motivation
-
-Here are several valid criticisms of this project:
-
-1. You shouldn't be working with CSV data because CSV is a terrible format.
-2. If your data is gigabytes in size, then CSV is the wrong storage type.
-3. Various SQL databases provide all of the operations available in `xsv` with
-   more sophisticated indexing support. And the performance is a zillion times
-   better.
-
-I'm sure there are more criticisms, but the impetus for this project was a 40GB
-CSV file that was handed to me. I was tasked with figuring out the shape of the
-data inside of it and coming up with a way to integrate it into our existing
-system. It was then that I realized that every single CSV tool I knew about was
-woefully inadequate. They were just too slow or didn't provide enough
-flexibility. (Another project I had comprised of a few dozen CSV files. They
-were smaller than 40GB, but they were each supposed to represent the same kind
-of data. But they all had different column and unintuitive column names. Useful
-CSV inspection tools were critical here—and they had to be reasonably fast.)
-
-The key ingredients for helping me with my task were indexing, random sampling,
-searching, slicing and selecting columns. All of these things made dealing with
-40GB of CSV data a bit more manageable (or dozens of CSV files).
-
-Getting handed a large CSV file *once* was enough to launch me on this quest.
-From conversations I've had with others, CSV data files this large don't seem
-to be a rare event. Therefore, I believe there is room for a tool that has a
-hope of dealing with data that large.
-
-
-### Naming collision
-
-This project is unrelated to another similar project with the same name:
-https://mj.ucw.cz/sw/xsv/
